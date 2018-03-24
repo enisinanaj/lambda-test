@@ -4,6 +4,7 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.areakappa.model.LambdaRequest;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -18,9 +19,21 @@ public class LambdaRequestHandler implements RequestHandler<LambdaRequest, Strin
         /*StringWriter sw = new StringWriter();
         JAXB.marshal(request, sw);
         String xmlString = sw.toString();
+        return xmlString;
+        return "From LambdaRequest: " + request.getParams().getQuerystring().getMyquerystring();*/
 
-        return xmlString;*/
-        return "From LambdaRequest: " + request.getParams().getQuerystring().getMyquerystring();
+        ObjectMapper om = new ObjectMapper();
+        om.writer().withDefaultPrettyPrinter().forType(LambdaRequest.class);
+
+        String result = "";
+
+        try {
+            result = om.writeValueAsString(request);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
     /*@Override
